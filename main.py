@@ -1,9 +1,12 @@
 import uvicorn
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
+from fastapi.responses import JSONResponse
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from dotenv import load_dotenv
+
+from celery_worker import create_task
 
 from schema import Book as SchemaBook
 from schema import Author as SchemaAuthor
@@ -11,6 +14,14 @@ from models import Author, Book
 
 load_dotenv(".env")
 app  = FastAPI()
+
+@app.post("/ex1")
+def run_task(data=Body()):
+    amount = int(data["amount"])
+    x = data["x"]
+    y = data["y"]
+    task = create_task.delay(amount, x, y)
+    return JSONResponse({"Task": task.get()})
 
 app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 

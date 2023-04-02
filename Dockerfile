@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.9.6-slim-buster
 ENV PYTHONBUFFERED=1
 WORKDIR /app
 COPY requirements.txt requirements.txt
